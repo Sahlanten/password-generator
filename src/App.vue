@@ -41,37 +41,72 @@ function toggleCharacterOption(index) {
 function updatePasswordLength(newLength) {
   passwordLength.value = newLength;
 }
-// woiejowjeo
+
 // Generates the password based on the selected options and length
 function generatePassword() {
-  const pool = [];
+  generatedPassword.value = ""; // Reset the password to start fresh
 
-  if (characterOptions.value.find((option) => option.optionKey === "lowercase")?.isSelected) {
-    pool.push(...getRandomCharacters("abcdefghijklmnopqrstuvwxyz", passwordLength.value));
-  }
-  if (characterOptions.value.find((option) => option.optionKey === "uppercase")?.isSelected) {
-    pool.push(...getRandomCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ", passwordLength.value));
-  }
-  if (characterOptions.value.find((option) => option.optionKey === "numbers")?.isSelected) {
-    pool.push(...getRandomCharacters("0123456789", passwordLength.value));
-  }
-  if (characterOptions.value.find((option) => option.optionKey === "symbols")?.isSelected) {
-    pool.push(...getRandomCharacters("!@#$%^&*()_+{}|:\"<>?-=[];',./~`", passwordLength.value));
-  }
-
-  if (pool.length === 0) {
+  // Check if no character options are selected
+  if (characterOptions.value.every((option) => !option.isSelected)) {
     generatedPassword.value = "Please select at least one option";
-    return;
+    return; // Exit if no options are selected
   }
 
-  // Shuffle and select characters
-  const shuffled = pool.sort(() => 0.5 - Math.random());
-  generatedPassword.value = shuffled.slice(0, passwordLength.value).join("");
+  // Include numbers if selected
+  if (characterOptions.value.find((option) => option.optionKey === "numbers")?.isSelected) {
+    for (let i = 0; i < passwordLength.value; i++) {
+      generatedPassword.value += getRandomNumber();
+    }
+  }
+
+  // Include lowercase letters if selected
+  if (characterOptions.value.find((option) => option.optionKey === "lowercase")?.isSelected) {
+    insertRandomCharacter(getRandomLowercaseLetter);
+  }
+
+  // Include uppercase letters if selected
+  if (characterOptions.value.find((option) => option.optionKey === "uppercase")?.isSelected) {
+    insertRandomCharacter(getRandomUppercaseLetter);
+  }
+
+  // Include symbols if selected
+  if (characterOptions.value.find((option) => option.optionKey === "symbols")?.isSelected) {
+    insertRandomCharacter(getRandomSymbol);
+  }
 }
 
-// Helper to get random characters from a string
-function getRandomCharacters(source, count) {
-  return Array.from({ length: count }, () => source[Math.floor(Math.random() * source.length)]);
+// Inserts a random character into the password at a random position
+function insertRandomCharacter(getCharacterFunction) {
+  let randomIndex = Math.floor(Math.random() * (generatedPassword.value.length + 1));
+  let randomCharacter = getCharacterFunction(); // Get a random character
+  let updatedPassword =
+    generatedPassword.value.slice(0, randomIndex) +
+    randomCharacter +
+    generatedPassword.value.slice(randomIndex);
+
+  // Replace one digit with the new character to maintain balance if numbers were added earlier
+  generatedPassword.value = updatedPassword.replace(/\d/, "");
+}
+
+// Generates a random number (default max is 9)
+function getRandomNumber(max = 9) {
+  return Math.floor(Math.random() * (max + 1));
+}
+
+// Generates a random uppercase letter
+function getRandomUppercaseLetter() {
+  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 26)];
+}
+
+// Generates a random lowercase letter
+function getRandomLowercaseLetter() {
+  return "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)];
+}
+
+// Generates a random symbol
+function getRandomSymbol() {
+  const symbols = "!@#$%^&*()_+{}|:\"<>?-=[];',./~`";
+  return symbols[Math.floor(Math.random() * symbols.length)];
 }
 </script>
 

@@ -9,9 +9,7 @@ function sendLength() {
   emit("length-data", lengthNumber.value);
 }
 
-// let props = defineProps({
-//   lengthNumber: Number,
-// });
+
 </script>
 
 <template>
