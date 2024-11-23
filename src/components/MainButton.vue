@@ -1,10 +1,7 @@
-<script setup>
-import { ref } from "vue";
-let btnGenarate = ref();
-</script>
+<script setup></script>
 
 <template>
-  <button @click="onbutton" ref="btnGenarate" class="btn generate">Generate Password</button>
+  <button class="btn generate">Generate Password</button>
 </template>
 
 <style lang="scss" scoped>

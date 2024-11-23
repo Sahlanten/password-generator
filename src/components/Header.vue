@@ -1,16 +1,30 @@
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+
+let result = ref();
+
+function clipboard() {
+  navigator.clipboard.writeText(result.value.innerText);
+
+  navigator.clipboard.readText().then((clipText) => {
+    console.log("- clipText -", clipText);
+  });
+}
+</script>
 
 <template>
   <h2 class="title">Password Generator</h2>
-  <div class="result">
-    <div class="result__viewbox" id="result" ref><slot>CLICK GENERATE</slot></div>
+  <div class="result" @click="clipboard">
+    <div class="result__viewbox" id="result" ref="result">
+      <slot>CLICK GENERATE</slot>
+    </div>
     <!-- copy text -->
-    <button id="copy-btn" style="--x: 0; --y: 0"><i class="far fa-copy"></i></button> 
+    <button id="copy-btn" style="--x: 0; --y: 0"><i class="far fa-copy"></i></button>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.container {
+container {
   margin: 40px 0;
   width: 400px;
   height: 600px;

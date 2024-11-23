@@ -5,7 +5,7 @@ import Header from "./components/Header.vue";
 import Range from "./components/Range.vue";
 import { ref } from "vue";
 
-let generatedPassword = ref("");
+let generatedPassword = ref("111111111");
 let passwordLength = ref(9);
 
 let characterOptions = ref([
