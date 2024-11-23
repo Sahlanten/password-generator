@@ -5,15 +5,14 @@ import Header from "./components/Header.vue";
 import Range from "./components/Range.vue";
 import { ref } from "vue";
 
-let generatedPassword = ref("123456789");
+let generatedPassword = ref("");
 let passwordLength = ref(9);
 
-// Array of options for including specific character types in the password
 let characterOptions = ref([
   {
-    label: "Include Lowercase Letters", // Description for UI
-    isSelected: false, // Indicates if lowercase letters should be included
-    optionKey: "lowercase", // Unique identifier for this option
+    label: "Include Lowercase Letters",
+    isSelected: false,
+    optionKey: "lowercase",
   },
   {
     label: "Include Uppercase Letters",
@@ -22,7 +21,7 @@ let characterOptions = ref([
   },
   {
     label: "Include Numbers",
-    isSelected: true, // Default selection
+    isSelected: true,
     optionKey: "numbers",
   },
   {
@@ -32,89 +31,55 @@ let characterOptions = ref([
   },
 ]);
 
-// Toggles the selected state of a character option based on its index
 function toggleCharacterOption(index) {
   characterOptions.value[index].isSelected = !characterOptions.value[index].isSelected;
 }
 
-// Updates the password length based on user input
 function updatePasswordLength(newLength) {
   passwordLength.value = newLength;
 }
 
-// Generates the password based on the selected options and length
-function generatePassword() {
-  generatedPassword.value = ""; // Reset the password to start fresh
+function newPassword(length, includeLowercase, includeUppercase, includeNumber, includeSymbol) {
+  let lowerChars = "abcdefghijklmnopqrstuvwxyz";
+  let upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let numberChars = "0123456789";
+  let symbolChars = "!@#$%^&*()_+{}|:\"<>?-=[];',./~`";
 
-  // Check if no character options are selected
-  if (characterOptions.value.every((option) => !option.isSelected)) {
-    generatedPassword.value = "Please select at least one option";
-    return; // Exit if no options are selected
+  let allowedChars = "";
+  let password = "";
+
+  allowedChars += includeLowercase ? lowerChars : "";
+  allowedChars += includeUppercase ? upperChars : "";
+  allowedChars += includeNumber ? numberChars : "";
+  allowedChars += includeSymbol ? symbolChars : "";
+
+  if (allowedChars.length === 0) {
+    return "Please select at least one character type.";
   }
 
-  // Include numbers if selected
-  if (characterOptions.value.find((option) => option.optionKey === "numbers")?.isSelected) {
-    for (let i = 0; i < passwordLength.value; i++) {
-      generatedPassword.value += getRandomNumber();
-    }
+  for (let i = 0; i < length; i++) {
+    let randomIndex = Math.floor(Math.random() * allowedChars.length);
+    password += allowedChars[randomIndex];
   }
 
-  // Include lowercase letters if selected
-  if (characterOptions.value.find((option) => option.optionKey === "lowercase")?.isSelected) {
-    insertRandomCharacter(getRandomLowercaseLetter);
-  }
-
-  // Include uppercase letters if selected
-  if (characterOptions.value.find((option) => option.optionKey === "uppercase")?.isSelected) {
-    insertRandomCharacter(getRandomUppercaseLetter);
-  }
-
-  // Include symbols if selected
-  if (characterOptions.value.find((option) => option.optionKey === "symbols")?.isSelected) {
-    insertRandomCharacter(getRandomSymbol);
-  }
+  return password;
 }
 
-// Inserts a random character into the password at a random position
-function insertRandomCharacter(getCharacterFunction) {
-  let randomIndex = Math.floor(Math.random() * (generatedPassword.value.length + 1));
-  let randomCharacter = getCharacterFunction(); // Get a random character
-  let updatedPassword =
-    generatedPassword.value.slice(0, randomIndex) +
-    randomCharacter +
-    generatedPassword.value.slice(randomIndex);
-
-  // Replace one digit with the new character to maintain balance if numbers were added earlier
-  generatedPassword.value = updatedPassword.replace(/\d/, "");
-}
-
-// Generates a random number (default max is 9)
-function getRandomNumber(max = 9) {
-  return Math.floor(Math.random() * (max + 1));
-}
-
-// Generates a random uppercase letter
-function getRandomUppercaseLetter() {
-  return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 26)];
-}
-
-// Generates a random lowercase letter
-function getRandomLowercaseLetter() {
-  return "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)];
-}
-
-// Generates a random symbol
-function getRandomSymbol() {
-  const symbols = "!@#$%^&*()_+{}|:\"<>?-=[];',./~`";
-  return symbols[Math.floor(Math.random() * symbols.length)];
+function generateNewPassword() {
+  generatedPassword.value = newPassword(
+    passwordLength.value,
+    characterOptions.value[0].isSelected,
+    characterOptions.value[1].isSelected,
+    characterOptions.value[2].isSelected,
+    characterOptions.value[3].isSelected
+  );
 }
 </script>
 
 <template>
   <div class="container">
     <Header>{{ generatedPassword }}</Header>
-
-    <Range @length-data="updatePasswordLength"></Range>
+    <Range @length-data="updatePasswordLength" />
 
     <div class="settings">
       <Checkbox
@@ -123,11 +88,11 @@ function getRandomSymbol() {
         :idName="option.optionKey"
         :labelName="option.label"
         :state="option.isSelected"
-        :changeStateFunction="() => toggleCharacterOption(index)"
+        @change="toggleCharacterOption(index)"
       />
     </div>
 
-    <MainButton @click="generatePassword">Generate Password</MainButton>
+    <MainButton @click="generateNewPassword">Generate Password</MainButton>
   </div>
 </template>
 
