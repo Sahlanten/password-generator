@@ -35,13 +35,13 @@ let characterOptions = ref([
 // Toggles the selected state of a character option based on its index
 function toggleCharacterOption(index) {
   characterOptions.value[index].isSelected = !characterOptions.value[index].isSelected;
-}git remote add origin https://github.com/Sahlanten/password-generator.git
+}
 
 // Updates the password length based on user input
 function updatePasswordLength(newLength) {
   passwordLength.value = newLength;
 }
-
+// woiejowjeo
 // Generates the password based on the selected options and length
 function generatePassword() {
   const pool = [];
